@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="300dp"
+        android:layout_height="400dp">
+
+        <ProgressBar
+            android:id="@+id/progress"
+            style="@style/Base.Widget.AppCompat.ProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true" />
+
+
+        <TextView
+            android:id="@+id/tv_progress_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/progress"
+            android:layout_centerHorizontal="true"
+            android:text="Connecting to device..." />
+
+
+        <TextView
+            android:id="@+id/tv_device_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="30dp"
+            android:text="Device Name: "
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tv_manufacturer_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/tv_device_name"
+            android:text="Manufacturer Name: "
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tv_model_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/tv_manufacturer_name"
+            android:text="Model Number: "
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tv_serial_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/tv_model_number"
+            android:text="Serial Number: "
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tv_local_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/tv_serial_number"
+            android:text="Local Time: "
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tv_battery_level"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/tv_local_time"
+            android:text="Battery Level: "
+            android:visibility="gone" />
+
+
+    </RelativeLayout>
+
+</LinearLayout>
