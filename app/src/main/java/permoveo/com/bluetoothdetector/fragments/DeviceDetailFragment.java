@@ -3,10 +3,8 @@ package permoveo.com.bluetoothdetector.fragments;
 import android.app.Dialog;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
-import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
-import android.bluetooth.BluetoothProfile;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -21,11 +19,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
@@ -65,9 +61,9 @@ public class DeviceDetailFragment extends DialogFragment {
     String mSerialNumberText = "Serial Number: ";
 
 
-    @Bind(R.id.tv_local_time)
+    @Bind(R.id.tv_firmware)
     TextView mLocalTime;
-    String mLocalTimeText = "Local Time: ";
+    String mFirmwareText = "Firmware Version: ";
 
 
     @Bind(R.id.tv_battery_level)
@@ -122,36 +118,24 @@ public class DeviceDetailFragment extends DialogFragment {
 
                     mBluetooth.getCharacteristicsForService(service);
 
+                    new Handler(getContext().getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mProgressText.setText("Getting device information");
+                        }
+                    });
+
+                } else {
+                    new Handler(getContext().getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mProgress.setVisibility(View.INVISIBLE);
+                            mProgressText.setText("Device information service \n not available!");
+                        }
+                    });
                 }
             }
 
-            if (!foundDeviceInfoService) {
-                Log.d("DeviceDetailFragment", "Device Info service not found");
-                //Toast.makeText(getContext(), "Device Information service not found on this device!", Toast.LENGTH_LONG).show();
-            } else {
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mProgressText.setVisibility(View.INVISIBLE);
-                        mProgress.setVisibility(View.INVISIBLE);
-
-                        mDeviceName.setVisibility(View.VISIBLE);
-                        mManufacturerName.setVisibility(View.VISIBLE);
-                        mModelNumber.setVisibility(View.VISIBLE);
-                        mSerialNumber.setVisibility(View.VISIBLE);
-                        mLocalTime.setVisibility(View.VISIBLE);
-                        mBatteryLevel.setVisibility(View.VISIBLE);
-
-                        mDeviceName.setText(mDeviceNameText);
-                        mModelNumber.setText(mModelNumberText);
-                        mManufacturerName.setText(mManufacturerNameText);
-                        mSerialNumber.setText(mSerialNumberText);
-                        mLocalTime.setText(mLocalTimeText);
-                        mBatteryLevel.setText(mBatteryLevelText);
-
-                    }
-                });
-            }
 
         }
 
@@ -164,7 +148,7 @@ public class DeviceDetailFragment extends DialogFragment {
                 // mBluetooth.requestCharacteristicValue(chara);
                 Log.d("DeviceDetailFragment", "Characteristic -> " + characteristic.getUuid());
 
-                mBluetooth.requestCharacteristicValue(characteristic);
+                mBluetooth.queueRequestCharacteristicValue(characteristic);
 
 
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -184,7 +168,7 @@ public class DeviceDetailFragment extends DialogFragment {
                         mModelNumber.setText(mModelNumberText);
                         mManufacturerName.setText(mManufacturerNameText);
                         mSerialNumber.setText(mSerialNumberText);
-                        mLocalTime.setText(mLocalTimeText);
+                        mLocalTime.setText(mFirmwareText);
                         mBatteryLevel.setText(mBatteryLevelText);
 
                         Toast.makeText(getContext(), "Device Information Found!", Toast.LENGTH_LONG).show();
@@ -218,35 +202,48 @@ public class DeviceDetailFragment extends DialogFragment {
         @Override
         public void uiNewValueForCharacteristic(BluetoothGatt gatt, BluetoothDevice device, BluetoothGattService service, BluetoothGattCharacteristic characteristic, String strValue, int intValue, byte[] rawValue, String timestamp) {
 
+
             if (characteristic != null && characteristic.getUuid().toString().equals(BluetoothConstants.BT_CHAR_DEVICE_NAME)) {
 
-                mDeviceNameText = "Device Name: " + characteristic.getStringValue(0);
+                mDeviceNameText = "Device Name: " + strValue;
+                Log.d("DeviceDetailFragment", "Characteristic UUID -> " + characteristic.getUuid());
 
 
-            } else if (characteristic != null && characteristic.getUuid().toString().equals(BluetoothConstants.BT_CHAR_SERIAL_NUMBER)) {
 
-                mSerialNumberText = "Serial Number: " + String.valueOf(characteristic.getStringValue(0));
+            }
+            else if (characteristic != null && characteristic.getUuid().toString().equals(BluetoothConstants.BT_CHAR_SERIAL_NUMBER)) {
 
-
-            } else if (characteristic != null && characteristic.getUuid().toString().equals(BluetoothConstants.BT_CHAR_MODEL_NUMBER)) {
-
-
-                mModelNumberText = "Model Number: " + characteristic.getStringValue(0);
+                mSerialNumberText = "Serial Number: " + strValue;
+                Log.d("DeviceDetailFragment", "Characteristic UUID -> " + characteristic.getUuid());
 
 
-            } else if (characteristic != null && characteristic.getUuid().toString().equals(BluetoothConstants.BT_CHAR_BATTERY_LEVEL)) {
-
-                mBatteryLevelText = "Battery Level: " + String.valueOf(characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0) + "%");
-
-
-            } else if (characteristic != null && characteristic.getUuid().toString().equals(BluetoothConstants.BT_CHAR_MANUFACTURER_NAME)) {
-
-                mManufacturerNameText = "Manufacturer Name: " + characteristic.getStringValue(0);
+            }
+            else if (characteristic != null && characteristic.getUuid().toString().equals(BluetoothConstants.BT_CHAR_MODEL_NUMBER)) {
 
 
-            } else if (characteristic != null && characteristic.getUuid().toString().equals(BluetoothConstants.BT_LOCAL_TIME)) {
+                mModelNumberText = "Model Number: " + strValue;
+                Log.d("DeviceDetailFragment", "Characteristic UUID -> " + characteristic.getUuid());
 
-                mBatteryLevelText = "Local Time: " + String.valueOf(characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0));
+
+            }
+            else if (characteristic != null && characteristic.getUuid().toString().equals(BluetoothConstants.BT_CHAR_BATTERY_LEVEL)) {
+
+                mBatteryLevelText = "Battery Level: " + strValue;
+                Log.d("DeviceDetailFragment", "Characteristic UUID -> " + characteristic.getUuid());
+
+
+            }
+            else if (characteristic != null && characteristic.getUuid().toString().equals(BluetoothConstants.BT_CHAR_MANUFACTURER_NAME)) {
+
+                mManufacturerNameText = "Manufacturer Name: " + strValue;
+                Log.d("DeviceDetailFragment", "Characteristic UUID -> " + characteristic.getUuid());
+
+
+            }
+            else if (characteristic != null && characteristic.getUuid().toString().equals(BluetoothConstants.BT_LOCAL_TIME)) {
+
+                mFirmwareText = "Firmware Version: " + strValue;
+                Log.d("DeviceDetailFragment", "Characteristic UUID -> " + characteristic.getUuid());
 
 
             }
@@ -267,7 +264,7 @@ public class DeviceDetailFragment extends DialogFragment {
                     mModelNumber.setText(mModelNumberText);
                     mManufacturerName.setText(mManufacturerNameText);
                     mSerialNumber.setText(mSerialNumberText);
-                    mLocalTime.setText(mLocalTimeText);
+                    mLocalTime.setText(mFirmwareText);
                     mBatteryLevel.setText(mBatteryLevelText);
 
                 }
@@ -320,21 +317,35 @@ public class DeviceDetailFragment extends DialogFragment {
         mBluetooth.initialize();
 
 
-        Log.d("DeviceDetailFragment", "OnCreateView, starting Gatt connection");
-        mBluetooth.connect(mBluetoothDevice.getAddress());
-
-
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        Log.d("DeviceDetailFragment", "OnResume, starting Gatt connection");
+        new Handler(getContext().getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                mBluetooth.connect(mBluetoothDevice.getAddress());
+            }
+        });
+    }
 
     @Override
     public void onPause() {
         super.onPause();
 
-        Log.d("DeviceDetailFragment", "OnPause, disconnecting GATT connection");
-        mBluetooth.disconnect();
-        mBluetooth.close();
+        new Handler(getContext().getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                Log.d("DeviceDetailFragment", "OnPause, disconnecting GATT connection");
+                mBluetooth.disconnect();
+                mBluetooth.close();
+            }
+        });
+
 
     }
 
