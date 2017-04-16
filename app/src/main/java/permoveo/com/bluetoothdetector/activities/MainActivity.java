@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_ENABLE_BT = 1;
     private boolean mScanning;
     private Handler mHandler = new Handler();
-    private static final long SCAN_PERIOD = 60000;
+    private static final long SCAN_PERIOD = 180000;
     private static final int PERMISSION_REQUEST_LOCATION = 7;
 
     private ArrayList<Device> mDevices = new ArrayList<Device>();
@@ -156,6 +156,12 @@ public class MainActivity extends AppCompatActivity {
             startActivity(discoverableIntent);
         }*/
 
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
 
     }
 
